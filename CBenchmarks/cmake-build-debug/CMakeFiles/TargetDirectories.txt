@@ -1,0 +1,3 @@
+C:/Users/zenbookx/Documents/Facultate/An III/Sem II/SCS/project/CBenchmarks/cmake-build-debug/CMakeFiles/CBenchmarks.dir
+C:/Users/zenbookx/Documents/Facultate/An III/Sem II/SCS/project/CBenchmarks/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/zenbookx/Documents/Facultate/An III/Sem II/SCS/project/CBenchmarks/cmake-build-debug/CMakeFiles/rebuild_cache.dir
