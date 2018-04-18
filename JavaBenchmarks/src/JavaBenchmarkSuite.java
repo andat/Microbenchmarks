@@ -1,3 +1,6 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class JavaBenchmarkSuite {
     private static int ARRAY_SIZE = 1000;
 
@@ -26,12 +29,12 @@ public class JavaBenchmarkSuite {
         return 0;
     }
 
+
     public void RunBenchmarks(){
         int n = 100;
-        System.out.println("Static memory allocation time: " + measureStaticMemoryAllocation(n) + " ns");
-        System.out.println("Dynamic memory allocation time: " + measureDynamicMemoryAllocation(n) + " ns");
-        //System.out.println("Memory access time: " + measureMemoryAccess(n) + " ns");
-        measureDynamicMemoryAllocation(n);
+        System.out.println("STATICMEM, Java, " + measureStaticMemoryAllocation(n) + " ns");
+        System.out.println("DYNAMICMEM, Java, " + measureDynamicMemoryAllocation(n) + " ns");
+        //System.out.println("MEMACCESS, Java, " + measureMemoryAccess(n) + " ns");
     }
 
     public static void main(String args[]){

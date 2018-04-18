@@ -71,10 +71,10 @@ nanoseconds measure_thread_creation() {
 int main() {
 	int n = 100;
 
-	cout << "Static memory allocation time: " << measure_static_mem_allocation(n).count() << " ns\n";
-	cout << "Dynamic memory allocation time: " << measure_dynamic_mem_allocation(n).count() << " ns\n";
-	cout << "Memory access time: " << measure_memory_access(n).count() << " ns\n";
-	//cout << "Thread creation time: " << measure_thread_creation().count() << "ns\n";
+	cout << "STATICMEM, Cpp, " << measure_static_mem_allocation(n).count() << " ns\n";
+	cout << "DYNAMICMEM, Cpp,  " << measure_dynamic_mem_allocation(n).count() << " ns\n";
+	cout << "MEMACCESS, Cpp, " << measure_memory_access(n).count() << " ns\n";
+	//cout << "THREADCREAT, Cpp, " << measure_thread_creation().count() << "ns\n";
 
 	return 0;
 }

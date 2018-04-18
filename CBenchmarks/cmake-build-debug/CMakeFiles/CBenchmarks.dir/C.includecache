@@ -7,12 +7,16 @@
 #IncludeRegexTransform: 
 
 C:/Users/zenbookx/Documents/Facultate/An III/Sem II/SCS/project/CBenchmarks/main.c
+
+C:/Users/zenbookx/Documents/Facultate/An III/Sem II/SCS/project/CBenchmarks/source.c
 stdio.h
 -
 stdlib.h
 -
-cpuid.h
+time.h
 -
-x86intrin.h
+windows.h
+-
+math.h
 -
 
