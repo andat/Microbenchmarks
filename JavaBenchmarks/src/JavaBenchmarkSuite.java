@@ -1,14 +1,16 @@
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class JavaBenchmarkSuite {
     private static int ARRAY_SIZE = 1000;
+    private ArrayList<Integer> numbers;
 
 
     private long measureStaticMemoryAllocation(int n){
         long start = System.nanoTime();
         for (int i = 0; i < n; i++) {
-            int array[];
+            int[] array = new int[n];
         }
         long stop = System.nanoTime();
         long elapsed = stop - start;
@@ -31,9 +33,9 @@ public class JavaBenchmarkSuite {
 
 
     public void RunBenchmarks(){
-        int n = 100;
-        System.out.println("STATICMEM, Java, " + measureStaticMemoryAllocation(n) + " ns");
-        System.out.println("DYNAMICMEM, Java, " + measureDynamicMemoryAllocation(n) + " ns");
+        int n = 1000;
+        System.out.println("STATICMEM, Java, " + measureStaticMemoryAllocation(n) /1000000.0 + " ms");
+        System.out.println("DYNAMICMEM, Java, " + measureDynamicMemoryAllocation(n) /1000000.0 + " ms");
         //System.out.println("MEMACCESS, Java, " + measureMemoryAccess(n) + " ns");
     }
 

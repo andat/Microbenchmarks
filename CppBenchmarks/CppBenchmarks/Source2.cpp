@@ -6,12 +6,14 @@
 #define SIZE 1000
 
 typedef std::chrono::high_resolution_clock Clock;
-typedef std::chrono::milliseconds milliseconds;
+typedef std::chrono::duration<double, std::milli> milliseconds;
 typedef std::chrono::nanoseconds nanoseconds;
 
-using namespace std;
 
-nanoseconds measure_static_mem_allocation(int n) {
+using namespace std;
+using std::chrono::duration_cast;
+
+milliseconds measure_static_mem_allocation(int n) {
 	Clock::time_point start = Clock::now();
 
 	for (int i = 0; i < n; i++) {
@@ -19,11 +21,11 @@ nanoseconds measure_static_mem_allocation(int n) {
 	}
 	
 	Clock::time_point end = Clock::now();
-	std::chrono::duration<long, nano> elapsed = end - start;
+	milliseconds elapsed = end - start;
 	return elapsed / n;
 }
 
-nanoseconds measure_dynamic_mem_allocation(int n) {
+milliseconds measure_dynamic_mem_allocation(int n) {
 	Clock::time_point start = Clock::now();
 
 	for (int i = 0; i < n; i++) {
@@ -31,11 +33,11 @@ nanoseconds measure_dynamic_mem_allocation(int n) {
 	}
 
 	Clock::time_point end = Clock::now();
-	std::chrono::duration<long, nano> elapsed = end - start;
+	milliseconds elapsed = end - start;
 	return elapsed / n;
 }
 
-nanoseconds measure_memory_access(int n) {
+milliseconds measure_memory_access(int n) {
 	int arr[SIZE] = {};
 
 	Clock::time_point start = Clock::now();
@@ -46,35 +48,51 @@ nanoseconds measure_memory_access(int n) {
 		}
 
 	Clock::time_point end = Clock::now();
-	std::chrono::duration<long, nano> elapsed = end - start;
+	milliseconds elapsed = end - start;
 	return elapsed / n;
 }
 
 
 void thread_foo() {
-	int x = 0;
+	int arr[SIZE] = {};
+	for (int j = 0; j < SIZE; j++) {
+			arr[j] = 1;
+	}
 }
 
-nanoseconds measure_thread_creation() {
-	/*Clock::time_point f0 = Clock::now();
+milliseconds thread_creation() {
+	Clock::time_point f0 = Clock::now();
 	thread_foo();
-	Clock::time_point f1 = Clock::now();*/
+	Clock::time_point f1 = Clock::now();
+	milliseconds fduration = f1 - f0;
+	//cout << "f dur: " << fduration.count();
 
 	Clock::time_point start = Clock::now();
 	thread t(thread_foo);
 	Clock::time_point end = Clock::now();
+	t.join();
+	//cout << "\nt total: " << (end - start).count();
 
-	std::chrono::duration<long, nano> elapsed = end - start;// -n * (f1 - f0);
-	return elapsed;
+	milliseconds elapsed = end - start;
+	return elapsed - fduration;
 }
 
-int main() {
-	int n = 100;
+milliseconds measure_thread_creation(int n) {
+	milliseconds t10ms(10);
+	for (int i = 0; i < n; i++) {
+		t10ms += thread_creation();
+	}
+	return (t10ms - milliseconds(10)) / n;
+}
 
-	cout << "STATICMEM, Cpp, " << measure_static_mem_allocation(n).count() << " ns\n";
-	cout << "DYNAMICMEM, Cpp,  " << measure_dynamic_mem_allocation(n).count() << " ns\n";
-	cout << "MEMACCESS, Cpp, " << measure_memory_access(n).count() << " ns\n";
-	//cout << "THREADCREAT, Cpp, " << measure_thread_creation().count() << "ns\n";
+
+int main() {
+	int n = SIZE;
+
+	cout << "STATICMEM, Cpp, " << measure_static_mem_allocation(n).count() << " ms\n";
+	cout << "DYNAMICMEM, Cpp,  " << measure_dynamic_mem_allocation(n).count() << " ms\n";
+	cout << "MEMACCESS, Cpp, " << measure_memory_access(n).count() << " ms\n";
+	cout << "THREADCREAT, Cpp, " << measure_thread_creation(n).count() << " ms\n";
 
 	return 0;
 }
