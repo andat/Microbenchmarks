@@ -149,6 +149,9 @@
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Source2.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp_benchmarks_results.csv" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

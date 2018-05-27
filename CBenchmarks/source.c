@@ -15,17 +15,13 @@ double measure_static_mem_allocation(int n) {
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&start);
 
-    //clock_gettime(CLOCK_MONOTONIC, &start);
     for (int i = 0; i < n; i++) {
-        int array[SIZE] = {};
+        int array[SIZE] = {0};
     }
 
-    //clock_gettime(CLOCK_MONOTONIC, &end);
-    //return (end.tv_nsec - start.tv_nsec) /(double)n;
     QueryPerformanceCounter(&end);
     interval = (double) (end.QuadPart - start.QuadPart) * 1000/ frequency.QuadPart;
     return interval / n;
-
 }
 
 double measure_dynamic_mem_allocation(int n) {
@@ -92,10 +88,10 @@ double measure_thread_creation(){
 
     QueryPerformanceCounter(&start);
     thread_handle = CreateThread(0, 0, foo, (LPVOID)5, 0, &thread_id);
+    WaitForSingleObject(thread_handle, INFINITE);
     QueryPerformanceCounter(&end);
-    CloseHandle(thread_handle);
 
-    interval = (double) (end.QuadPart - start.QuadPart) * 1000/ frequency.QuadPart;
+    interval = ((double) (end.QuadPart - start.QuadPart) - foo_time) * 1000/ frequency.QuadPart;
     return interval - foo_time;
 }
 
@@ -117,10 +113,10 @@ double context_switch(){
     thread = CreateThread(0,0, context_foo, 0, CREATE_SUSPENDED, &thread_id);
     QueryPerformanceCounter(&start);
     // set high priority so that the thread is resumed as soon as possible
-    SetThreadPriority(thread, 10);
+    SetThreadPriority(thread, THREAD_PRIORITY_HIGHEST);
     ResumeThread(thread);
     //wait until thread executes
-    Sleep(15);
+    WaitForSingleObject(thread, INFINITE);
     duration = (double) (end.QuadPart - start.QuadPart) * 1000/ frequency.QuadPart;
     //printf("\nduration: %.3lf", duration);
     return duration;
@@ -144,15 +140,31 @@ double measure_thread_migration(){
 
 
 
-int main() {
-    int n = 1000;
+int main(int argc, char*argv[]) {
+    int n;
+    if (argc < 2) {
+        n = 1000;
+    } else
+        n = atoi(argv[1]);
 
-    printf("STATICMEM, C, %lf ms\n", measure_static_mem_allocation(n));
-    printf("DYNAMICMEM, C, %lf ms\n", measure_dynamic_mem_allocation(n));
-    printf("MEMACCESS, C, %lf ms\n",measure_memory_access(n));
-    printf("THREADCREAT, C, %lf ms\n", measure_thread_creation());
-    printf("CONTEXTSW, C, %lf ms\n", measure_context_switch1(n));
+    FILE *f = fopen("C:/Users/zenbookx/Documents/Facultate/An III/Sem II/SCS/project/CBenchmarks/cmake-build-debug/c_benchmarks_results.csv", "w");
+    if (f == NULL)
+    {
+        printf("Error opening file!\n");
+        exit(1);
+    }
+
+    //print number of iterations
+    fprintf(f, "%d\n", n);
+    fprintf(f, "STATICMEM, C, %lf ms\n", measure_static_mem_allocation(n));
+    fprintf(f, "DYNAMICMEM, C, %lf ms\n", measure_dynamic_mem_allocation(n));
+    fprintf(f, "MEMACCESS, C, %lf ms\n",measure_memory_access(n));
+    fprintf(f, "THREADCREAT, C, %lf ms\n", measure_thread_creation());
+    fprintf(f, "CONTEXTSW, C, %lf ms\n", measure_context_switch1(n));
     //printf("THREADMIGR, C, %.4lf ms\n", );
+
+    printf("C benchmarks results written to file!");
+    fclose(f);
     return 0;
 }
 
