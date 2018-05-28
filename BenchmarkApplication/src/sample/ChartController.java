@@ -126,6 +126,7 @@ public class ChartController implements Initializable{
         javaSeries.getData().add(new XYChart.Data<>(dynamicMem, javaValues.get(1)));
         javaSeries.getData().add(new XYChart.Data<>(memAccess, javaValues.get(2)));
         javaSeries.getData().add(new XYChart.Data<>(threadCreat, javaValues.get(3)));
+        javaSeries.getData().add(new XYChart.Data<>(contextSw, javaValues.get(4)));
     }
 
     private void fillCppSeries(){
@@ -165,7 +166,7 @@ public class ChartController implements Initializable{
         List<Double> values = new ArrayList<>();
         for(int i = 1; i < lines.size(); i++){
             String[] tokens = lines.get(i).split(", ");
-            String val = tokens[2].replaceAll("ms", "");
+            String val = tokens[2].replaceAll("us", "");
             values.add(Double.parseDouble(val));
         }
         return values;

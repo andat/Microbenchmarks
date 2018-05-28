@@ -83,19 +83,21 @@ public class JavaBenchmarkSuite {
     public double measureThreadCreation(int n){
         double duration = 0.0;
 
-        for(int i = 0; i< n; i++)
-            try {
+        try {
+            for(int i = 0; i< n; i++)
                 duration += createThread();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         return duration / n;
     }
 
     private void foo(){
-        int i = 0;
-        i += 1;
+        int[] arr = new int[ARRAY_SIZE];
+        for (int j = 0; j < ARRAY_SIZE; j++) {
+            arr[j] = 1;
+        }
     }
 
     public double createThread() throws InterruptedException {
@@ -107,7 +109,8 @@ public class JavaBenchmarkSuite {
         Thread t = new Thread(() -> {foo();});
         t.start();
         t.join();
-        return System.nanoTime() - start - fooDuration;
+        long end = System.nanoTime();
+        return end - start - fooDuration;
     }
 
     void sleep_foo(){
@@ -138,15 +141,43 @@ public class JavaBenchmarkSuite {
 
     }
 
+    long context_end = 0;
+
+    void context_foo(){
+        context_end = System.nanoTime();
+    }
+
+    double contextSwitch() throws InterruptedException {
+        long start = System.nanoTime();
+        Thread t = new Thread(() -> {context_foo();});
+        t.setPriority(Thread.MAX_PRIORITY);
+        t.start();
+        t.join();
+
+        return context_end - start;
+    }
+
+    double measureContextSwitch2(int n){
+        double total = 0.0;
+        try{
+            for(int i = 0; i < n; i++)
+                total += contextSwitch();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return total / n;
+    }
+
     public void RunBenchmarks(int n) {
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\zenbookx\\Documents\\Facultate\\An III\\Sem II\\SCS\\project\\JavaBenchmarks\\ java_benchmarks_results.csv"));
             bw.write(n + "\n");
-            bw.write("STATICMEM, Java, " + measureStaticMemoryAllocation(n) /1000000.0 + " ms\n");
-            bw.write("DYNAMICMEM, Java, " + measureDynamicMemoryAllocation(n) /1000000.0 + " ms\n");
-            bw.write("MEMACCESS, Java, " + measureMemoryAccess(n) / 1000000.0+ " ms\n");
-            bw.write("THREADCREAT, Java, " + measureThreadCreation(n) / 1000000.0 + " ms\n");
-            bw.write("CONTEXTSW, Java, " + measureContextSwitch(n) / 1000000.0 + " ms\n");
+            bw.write("STATICMEM, Java, " + String.format("%.3f", measureStaticMemoryAllocation(n) /1000.0 ) + " us\n");
+            bw.write("DYNAMICMEM, Java, " + String.format("%.3f", measureDynamicMemoryAllocation(n) /1000.0) + " us\n");
+            bw.write("MEMACCESS, Java, " + String.format("%.3f",measureMemoryAccess(n) / 1000.0) + " us\n");
+            bw.write("THREADCREAT, Java, " + String.format("%.3f",measureThreadCreation(n) / 1000.0) + " us\n");
+            bw.write("CONTEXTSW, Java, " + String.format("%.3f",measureContextSwitch2(n) / 1000.0) + " us\n");
             bw.close();
             System.out.println("Java results written to csv.");
         } catch (IOException e) {

@@ -20,7 +20,7 @@ public class BenchmarkUI extends Application {
         Parent root = loader.load();
 
         primaryStage.setTitle("Microbenchmarks");
-        primaryStage.setScene(new Scene(root, 900, 600));
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }
 }

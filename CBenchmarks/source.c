@@ -20,7 +20,7 @@ double measure_static_mem_allocation(int n) {
     }
 
     QueryPerformanceCounter(&end);
-    interval = (double) (end.QuadPart - start.QuadPart) * 1000/ frequency.QuadPart;
+    interval = (double) (end.QuadPart - start.QuadPart) * 1000000/ frequency.QuadPart;
     return interval / n;
 }
 
@@ -36,12 +36,10 @@ double measure_dynamic_mem_allocation(int n) {
     for (int i = 0; i < n; i++) {
         int* array = (int*)malloc(SIZE * sizeof(int));
     }
-
     QueryPerformanceCounter(&end);
-    interval = (double) (end.QuadPart - start.QuadPart) * 1000/ frequency.QuadPart;
+
+    interval = (double) (end.QuadPart - start.QuadPart) * 1000000/ frequency.QuadPart;
     return interval / n;
-    //clock_gettime(CLOCK_MONOTONIC, &end);
-    //return (end.tv_nsec - start.tv_nsec) / (double)n;
 }
 
 double measure_memory_access(int n) {
@@ -55,23 +53,23 @@ double measure_memory_access(int n) {
     QueryPerformanceFrequency(&frequency);
     QueryPerformanceCounter(&start);
     for(int i = 0; i < n; i++)
-        for (int j = 0; j < SIZE;j++) {
+        for (int j = 0; j < SIZE; j++) {
             arr[j]++;
         }
-
     QueryPerformanceCounter(&end);
-    interval = (double) (end.QuadPart - start.QuadPart) * 1000/ frequency.QuadPart;
+
+    interval = (double) (end.QuadPart - start.QuadPart) * 1000000/ frequency.QuadPart;
     return interval / n;
 }
 
 void foo() {
-    int arr[SIZE] = {};
+    int arr[SIZE] = {0};
     for (int j = 0; j < SIZE; j++) {
         arr[j] = 1;
     }
 }
 
-double measure_thread_creation(){
+double thread_creation(){
     LARGE_INTEGER frequency, start, end, foo_start, foo_end;
     double foo_time, interval;
 
@@ -80,7 +78,7 @@ double measure_thread_creation(){
     QueryPerformanceCounter(&foo_start);
     foo();
     QueryPerformanceCounter(&foo_end);
-    foo_time = (double) (foo_end.QuadPart - foo_start.QuadPart) * 1000/ frequency.QuadPart;
+    foo_time = (double) (foo_end.QuadPart - foo_start.QuadPart) * 1000000/ frequency.QuadPart;
 
     //measure thread creation
     HANDLE thread_handle;
@@ -91,8 +89,15 @@ double measure_thread_creation(){
     WaitForSingleObject(thread_handle, INFINITE);
     QueryPerformanceCounter(&end);
 
-    interval = ((double) (end.QuadPart - start.QuadPart) - foo_time) * 1000/ frequency.QuadPart;
+    interval = (double) (end.QuadPart - start.QuadPart)  * 1000000/ frequency.QuadPart;
     return interval - foo_time;
+}
+
+double measure_thread_creation(int n){
+    double total = 0.0;
+    for(int i = 0; i<n; i++)
+        total += thread_creation();
+    return total / n;
 }
 
 LARGE_INTEGER start, end;
@@ -117,7 +122,7 @@ double context_switch(){
     ResumeThread(thread);
     //wait until thread executes
     WaitForSingleObject(thread, INFINITE);
-    duration = (double) (end.QuadPart - start.QuadPart) * 1000/ frequency.QuadPart;
+    duration = (double) (end.QuadPart - start.QuadPart) * 1000000/ frequency.QuadPart;
     //printf("\nduration: %.3lf", duration);
     return duration;
 }
@@ -128,14 +133,6 @@ double measure_context_switch1(int n){
         total += context_switch();
     }
     return total / n;
-}
-
-void thread_migration(){
-
-}
-
-double measure_thread_migration(){
-
 }
 
 
@@ -156,11 +153,11 @@ int main(int argc, char*argv[]) {
 
     //print number of iterations
     fprintf(f, "%d\n", n);
-    fprintf(f, "STATICMEM, C, %lf ms\n", measure_static_mem_allocation(n));
-    fprintf(f, "DYNAMICMEM, C, %lf ms\n", measure_dynamic_mem_allocation(n));
-    fprintf(f, "MEMACCESS, C, %lf ms\n",measure_memory_access(n));
-    fprintf(f, "THREADCREAT, C, %lf ms\n", measure_thread_creation());
-    fprintf(f, "CONTEXTSW, C, %lf ms\n", measure_context_switch1(n));
+    fprintf(f, "STATICMEM, C, %.3lf us\n", measure_static_mem_allocation(n));
+    fprintf(f, "DYNAMICMEM, C, %.3lf us\n", measure_dynamic_mem_allocation(n));
+    fprintf(f, "MEMACCESS, C, %.3lf us\n",measure_memory_access(n));
+    fprintf(f, "THREADCREAT, C, %.3lf us\n", measure_thread_creation(n));
+    fprintf(f, "CONTEXTSW, C, %.3lf us\n", measure_context_switch1(n));
     //printf("THREADMIGR, C, %.4lf ms\n", );
 
     printf("C benchmarks results written to file!");
