@@ -62,8 +62,8 @@ public class ChartController implements Initializable{
 
         //yAxis.setAutoRanging(true);
         yAxis.setLowerBound(0.0);
-        yAxis.setUpperBound(1.5);
-        yAxis.setTickUnit(0.0001);
+        yAxis.setUpperBound(1.0);
+        yAxis.setTickUnit(0.00001);
         yAxis.setLabel("Execution time(ms)");
 
         //initialize series
@@ -75,9 +75,14 @@ public class ChartController implements Initializable{
 
         this.cSeries = new XYChart.Series();
         cSeries.setName("C");
+
+        this.barChart.setBarGap(3);
+        this.barChart.setCategoryGap(30);
+        this.barChart.setAnimated(false);
     }
 
     public void runBtnClicked(){
+        barChart.getData().clear();
         try {
             //java
             ProcessBuilder pb = new ProcessBuilder("java", "-jar", jarPath);
@@ -108,7 +113,7 @@ public class ChartController implements Initializable{
 
     private void fillJavaSeries(){
         //java
-        List<String> javaLines = readFromFile("C:/Users/zenbookx/Documents/Facultate/An III/Sem II/SCS/project/JavaBenchmarks/java_benchmarks_results.csv");
+        List<String> javaLines = readFromFile("C:\\Users\\zenbookx\\Documents\\Facultate\\An III\\Sem II\\SCS\\project\\JavaBenchmarks\\ java_benchmarks_results.csv");
         List<Double> javaValues = extractValues(javaLines);
 
         this.javaLog.setText("");
@@ -181,7 +186,7 @@ public class ChartController implements Initializable{
             bufferedReader.close();
         }
         catch(FileNotFoundException ex) {
-            System.out.println("Unable to open file '" + filename + "'");
+            System.out.println("File " + filename + "not found");
         }
         catch(IOException ex) {
             ex.printStackTrace();
