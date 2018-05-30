@@ -64,7 +64,7 @@ public class ChartController implements Initializable{
         yAxis.setLowerBound(0.0);
         yAxis.setUpperBound(1.0);
         yAxis.setTickUnit(0.00001);
-        yAxis.setLabel("Execution time(ms)");
+        yAxis.setLabel("Execution time(us)");
 
         //initialize series
         this.javaSeries = new XYChart.Series();

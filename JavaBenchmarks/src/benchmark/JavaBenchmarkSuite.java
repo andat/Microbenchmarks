@@ -12,34 +12,29 @@ import java.util.Random;
 public class JavaBenchmarkSuite {
     private static int ARRAY_SIZE = 1000;
     private static int THREAD_SLEEP = 50;
-    private ArrayList<Integer> numbers;
 
     private double measureStaticMemoryAllocation(int n){
+        long sum = 0;
+        for(int i = 0; i< n ; i++){
+            sum += staticMem();
+        }
+        return sum / n;
+    }
+
+    private double staticMem(){
         int[] randomArray = new int[ARRAY_SIZE];
         Random rand = new Random();
 
-        for(int i = 0; i< ARRAY_SIZE; i++)
-            randomArray[i] = rand.nextInt(ARRAY_SIZE);
-
-        int sum = 0;
         long dummyStart = System.nanoTime();
-        sum += randomArray[0];
+        System.nanoTime();
         long dummyDuration = System.nanoTime() - dummyStart;
-        randomArray[0] = sum;
-        sum = 0;
 
         long start = System.nanoTime();
-        //declare arrays as local variables
-        for (int i = 0; i < n; i++) {
-            int local = randomArray[i];
-            sum += local;
-        }
+        int[] local = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         long stop = System.nanoTime();
-        long elapsed = stop - start;
 
-        //use sum so that the compiler does not optimize it
-        randomArray[rand.nextInt(ARRAY_SIZE)] = sum;
-        return elapsed / n;
+        randomArray[rand.nextInt(ARRAY_SIZE)] = local.length;
+        return stop - start- dummyDuration;
     }
 
     private double measureDynamicMemoryAllocation(int n){
